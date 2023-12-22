@@ -1,0 +1,19 @@
+{
+  "name": "mern-ecommerce",
+  "version": "0.0.1",
+  "description": "MERN stack E-commerce website",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KalpasWang/mern-ecommerce.git"
+  },
+  "author": "Kalpas Wang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KalpasWang/mern-ecommerce/issues"
+  },
+  "homepage": "https://github.com/KalpasWang/mern-ecommerce#readme"
+}
