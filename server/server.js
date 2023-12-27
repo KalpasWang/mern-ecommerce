@@ -1,12 +1,11 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 
 // init server
 const app = express();
-dotenv.config();
 const port = process.env.PORT || 5000;
 
+// setup middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
