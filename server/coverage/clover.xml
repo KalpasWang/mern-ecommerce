@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1703755825728" clover="3.2.0">
-  <project timestamp="1703755825728" name="All files">
-    <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0" elements="8" coveredelements="8" complexity="0" loc="6" ncloc="6" packages="1" files="1" classes="1"/>
-    <file name="app.js" path="D:\code\full-stack\mern-ecommerce\server\app.js">
-      <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
-      <line num="6" count="1" type="stmt"/>
-      <line num="7" count="1" type="cond" truecount="2" falsecount="0"/>
-      <line num="10" count="1" type="stmt"/>
-      <line num="11" count="1" type="stmt"/>
-      <line num="12" count="1" type="stmt"/>
-      <line num="13" count="1" type="stmt"/>
-    </file>
+<coverage generated="1703841774869" clover="3.2.0">
+  <project timestamp="1703841774869" name="All files">
+    <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0" elements="0" coveredelements="0" complexity="0" loc="0" ncloc="0" packages="0" files="0" classes="0"/>
   </project>
 </coverage>

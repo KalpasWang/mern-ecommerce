@@ -15,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/KalpasWang/mern-ecommerce/issues"
   },
-  "homepage": "https://github.com/KalpasWang/mern-ecommerce#readme",
-  "devDependencies": {
-    "@types/supertest": "^6.0.2"
-  }
+  "homepage": "https://github.com/KalpasWang/mern-ecommerce#readme"
 }
