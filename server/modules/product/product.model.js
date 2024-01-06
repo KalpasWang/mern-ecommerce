@@ -1,33 +1,7 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
-const reviewSchema = mongoose.Schema(
+const productSchema = new Schema(
   {
-    name: { type: String, required: true },
-    rating: { type: Number, required: true },
-    comment: { type: String, required: true },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const productSchema = mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
-    vendor: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "Vendor",
-    },
     name: {
       type: String,
       required: true,
@@ -38,10 +12,6 @@ const productSchema = mongoose.Schema(
     },
     brand: {
       type: String,
-      required: true,
-    },
-    amount: {
-      type: Number,
       required: true,
     },
     category: {
@@ -56,7 +26,23 @@ const productSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    reviews: [reviewSchema],
+    reviews: [
+      new Schema(
+        {
+          name: { type: String, required: true },
+          rating: { type: Number, required: true },
+          comment: { type: String, required: true },
+          user: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User",
+          },
+        },
+        {
+          timestamps: true,
+        }
+      ),
+    ],
     rating: {
       type: Number,
       required: true,
@@ -77,12 +63,17 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 0,
     },
+    modifiedBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = model("Product", productSchema);
 
 export default Product;

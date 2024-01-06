@@ -8,7 +8,7 @@
     "start": "node server.js",
     "dev": "node --env-file .env.develop --watch server.js",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll --detectOpenHandles"
   },
   "author": "Kalpas Wang",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
+    "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
