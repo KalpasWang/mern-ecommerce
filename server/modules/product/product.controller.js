@@ -1,4 +1,6 @@
 import Product from "./product.model";
+import { CustomError } from "../../utils/customError";
+import { isValidObjectId } from "mongoose";
 
 /**
  * @access Public
@@ -7,8 +9,11 @@ import Product from "./product.model";
  */
 export async function getAllProducts(req, res, next) {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    const products = await Product.find().select("-reviews");
+    res.status(200).json({
+      success: true,
+      products,
+    });
   } catch (error) {
     next(error);
   }
@@ -21,12 +26,17 @@ export async function getAllProducts(req, res, next) {
  */
 export async function getProductById(req, res, next) {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      throw new CustomError(`product not found with invalid product Id`, 404);
+    }
     const product = await Product.findById(req.params.id);
     if (product) {
-      return res.json(product);
+      return res.json({
+        success: true,
+        product,
+      });
     } else {
-      res.status(404);
-      throw new Error("Product not found");
+      throw new CustomError("Product not found", 404);
     }
   } catch (error) {
     next(error);
