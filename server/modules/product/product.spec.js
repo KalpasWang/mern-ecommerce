@@ -53,10 +53,11 @@ describe("products", () => {
 
     it("returns products without reviews", async () => {
       const res = await getProducts();
-      res.body.products.forEach((product) => {
+      res.body.products.forEach((product, i) => {
+        expect(product.name).toBe(productsTestData[i].name);
         expect(product.reviews).toBeUndefined();
       });
-      expect.assertions(6);
+      expect.assertions(productsTestData.length * 2);
     });
   });
 
