@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { SALT } from "../../utils/constants.js";
 
-export const usersTestData = [
+export const userSamples = [
   {
     name: "user 1",
     email: "test1@test.com",

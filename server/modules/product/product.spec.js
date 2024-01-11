@@ -4,7 +4,7 @@ import app from "../../app.js";
 import Product from "./product.model.js";
 import User from "../user/user.model.js";
 import { productSamples } from "./product.sample.js";
-import { usersTestData } from "../user/usersTestData.js";
+import { userSamples } from "../user/user.sample.js";
 
 let createdUsers = null;
 let createdProducts = null;
@@ -20,7 +20,7 @@ async function getProductById(id) {
 }
 
 beforeEach(async () => {
-  createdUsers = await User.insertMany(usersTestData);
+  createdUsers = await User.insertMany(userSamples);
   const adminUser = createdUsers.find((user) => user.isAdmin);
   const data = productSamples.map((product) => ({
     ...product,

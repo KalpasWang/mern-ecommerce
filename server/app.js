@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { productRoutes } from "./modules/product/product.route.js";
+import { userRoutes } from "./modules/user/user.controller.js";
 
 // init server
 const app = express();
@@ -14,6 +15,7 @@ app.use(cookieParser());
 // app.use(morgan("dev"));
 
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("*", (req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
