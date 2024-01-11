@@ -1,4 +1,4 @@
-export const productsTestData = [
+export const productSamples = [
   {
     name: "Airpods Wireless Bluetooth Headphones",
     image: "/images/airpods.jpg",

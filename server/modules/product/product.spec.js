@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../../app.js";
 import Product from "./product.model.js";
 import User from "../user/user.model.js";
-import { productsTestData } from "./productsTestData.js";
+import { productSamples } from "./product.sample.js";
 import { usersTestData } from "../user/usersTestData.js";
 
 let createdUsers = null;
@@ -22,11 +22,11 @@ async function getProductById(id) {
 beforeEach(async () => {
   createdUsers = await User.insertMany(usersTestData);
   const adminUser = createdUsers.find((user) => user.isAdmin);
-  const sampleProducts = productsTestData.map((product) => ({
+  const data = productSamples.map((product) => ({
     ...product,
     modifiedBy: adminUser._id,
   }));
-  createdProducts = await Product.insertMany(sampleProducts);
+  createdProducts = await Product.insertMany(data);
 });
 
 afterEach(async () => {
@@ -47,17 +47,17 @@ describe("products", () => {
 
     it("returns products array with length equal to test data", async () => {
       const res = await getProducts();
-      expect(res.body.products.length).toBe(productsTestData.length);
+      expect(res.body.products.length).toBe(productSamples.length);
       expect.hasAssertions();
     });
 
     it("returns products without reviews", async () => {
       const res = await getProducts();
       res.body.products.forEach((product, i) => {
-        expect(product.name).toBe(productsTestData[i].name);
+        expect(product.name).toBe(productSamples[i].name);
         expect(product.reviews).toBeUndefined();
       });
-      expect.assertions(productsTestData.length * 2);
+      expect.assertions(productSamples.length * 2);
     });
   });
 
@@ -84,7 +84,13 @@ describe("products", () => {
     });
   });
 
-  describe("POST /api/products, create new product", () => {});
+  describe("POST /api/products, create new product", () => {
+    it("returns 201 created with valid data", async () => {});
+    it("returns 400 bad request with invalid data", async () => {});
+    it("returns 401 unauthorized with invalid token", async () => {});
+    it("returns 403 forbidden with invalid user", async () => {});
+  });
   describe("PUT /api/products/:id, update product detail by id", () => {});
-  describe("DELETE /api/products/:id, delete product detail by id", () => {});
+  describe("DELETE /api/products/:id, delete product by id", () => {});
+  describe("POST /api/products/:id/reviews, create new product review", () => {});
 });
