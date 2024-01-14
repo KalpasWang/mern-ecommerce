@@ -4,9 +4,9 @@ import User from "./user.model";
 const router = express.Router();
 
 /**
+ * get all users
  * @access private - admin only
  * @route GET /api/users
- * @description get all users
  */
 router.get("/", async (req, res, next) => {
   try {
