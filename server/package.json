@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --env-file .env.develop --watch server.js",
+    "dev": "node --env-file .env.development.local --watch server.js",
     "test": "jest",
     "test:watch": "jest --watchAll --detectOpenHandles"
   },

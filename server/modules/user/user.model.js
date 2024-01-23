@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { JWT_EXPIRES_IN } from "../../utils/constants";
 
 const userSchema = new Schema(
   {
@@ -28,19 +30,26 @@ const userSchema = new Schema(
 );
 
 // Match user entered password to hashed password in database
-userSchema.methods.matchPassword = async function (enteredPassword) {
+userSchema.method("matchPassword", async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
-};
+});
+
+// generate user token
+userSchema.method("generateToken", function () {
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+    expiresIn: JWT_EXPIRES_IN,
+  });
+});
 
 // Encrypt password using bcrypt
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
+// userSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) {
+//     next();
+//   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = await bcrypt.hash(this.password, salt);
+// });
 
 const User = model("User", userSchema);
 

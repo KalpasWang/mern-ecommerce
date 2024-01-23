@@ -1,5 +1,5 @@
-import Product from "./product.model";
-import { CustomError } from "../../utils/customError";
+import Product from "./product.model.js";
+import { CustomError } from "../../utils/customError.js";
 import { isValidObjectId } from "mongoose";
 
 /**

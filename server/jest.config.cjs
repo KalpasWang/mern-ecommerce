@@ -10,8 +10,8 @@ const config = {
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
   testEnvironment: "node",
-  setupFiles: ["<rootDir>/test/setupEnv.js"],
-  setupFilesAfterEnv: ["<rootDir>/test/setupFile.js"],
+  setupFiles: ["<rootDir>/setupEnv.js"],
+  setupFilesAfterEnv: ["<rootDir>/setupFile.js"],
   // globalSetup: "<rootDir>/test/globalSetup.js",
   // globalTeardown: "<rootDir>/test/globalTeardown.js",
   transform: {
