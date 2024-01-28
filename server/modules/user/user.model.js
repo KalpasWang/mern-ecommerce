@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { JWT_EXPIRES_IN } from "../../utils/constants";
+import { JWT_EXPIRES_IN } from "../../utils/constants.js";
 
 const userSchema = new Schema(
   {
