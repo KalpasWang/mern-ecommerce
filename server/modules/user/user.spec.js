@@ -91,4 +91,15 @@ describe("users", () => {
       expect.assertions(2);
     });
   });
+
+  describe("POST /api/users/logout, logout user", () => {
+    const logoutApi = "/api/users/logout";
+
+    it("returns 200 ok and success true", async () => {
+      const res = await request(app).post(logoutApi);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect.assertions(2);
+    });
+  });
 });

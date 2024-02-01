@@ -46,6 +46,23 @@ router.post("/auth", async (req, res, next) => {
 });
 
 /**
+ * logout user
+ * @access public
+ * @route POST /api/users/logout
+ */
+router.post("/logout", async (req, res, next) => {
+  try {
+    res.clearCookie("jwt");
+    res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * get all users
  * @access private - admin only
  * @route GET /api/users
