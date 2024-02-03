@@ -2,6 +2,7 @@ import express from "express";
 import User from "./user.model.js";
 import { CustomError } from "../../utils/customError.js";
 import { JWT_EXPIRES_IN_NUM } from "../../utils/constants.js";
+import { registerValidator } from "./user.validator.js";
 
 const router = express.Router();
 
@@ -56,6 +57,34 @@ router.post("/logout", async (req, res, next) => {
     res.json({
       success: true,
       message: "Logged out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * register new user
+ * @access public
+ * @route POST /api/users/register
+ */
+router.post("/register", registerValidator, async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (user) {
+      throw new CustomError("user alredy exists", 409);
+    }
+    const createdUser = await User.create({ name, email, password });
+    if (!createdUser) {
+      throw new CustomError("server Unable to create user", 500);
+    }
+    res.status(201).json({
+      success: true,
+      id: createdUser._id.toString(),
+      name: createdUser.name,
+      email: createdUser.email,
+      isAdmin: createdUser.isAdmin,
     });
   } catch (error) {
     next(error);

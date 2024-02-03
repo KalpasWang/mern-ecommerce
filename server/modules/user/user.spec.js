@@ -102,4 +102,46 @@ describe("users", () => {
       expect.assertions(2);
     });
   });
+
+  describe("POST /api/users/register, register user", () => {
+    const registerApi = "/api/users/register";
+
+    it("returns 201 created and success true with valid user data", async () => {
+      const res = await request(app)
+        .post(registerApi)
+        .send({ name: fakeUser.name, email: fakeUser.email, password: fakeUser.password });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect.assertions(2);
+    });
+
+    describe("invalid user data", () => {
+      function invalidDataPost(user = fakeUser) {
+        const { name, email, password } = user;
+        return request(app).post(registerApi).send({ name, email, password });
+      }
+
+      it.each([{ field: "name", value: "$%john" }])(
+        "returns 400 bad request when user $field is $value",
+        async ({ field, value }) => {
+          const res = await invalidDataPost({ ...fakeUser, [field]: value });
+          expect(res.statusCode).toBe(400);
+          expect(res.body.success).toBe(false);
+          // expect(res.body.errors[field]).toBeDefined();
+          // expect(res.body.errors[field]).toBe("Invalid name");
+          expect.assertions(2);
+        }
+      );
+    });
+
+    it("returns 409 conflict with existing user email", async () => {
+      await addNewUser();
+      const res = await request(app)
+        .post(registerApi)
+        .send({ name: fakeUser.name, email: fakeUser.email, password: fakeUser.password });
+      expect(res.statusCode).toBe(409);
+      expect(res.body.success).toBe(false);
+      expect.assertions(2);
+    });
+  });
 });
