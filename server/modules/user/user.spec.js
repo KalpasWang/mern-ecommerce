@@ -9,7 +9,7 @@ import { SALT } from "../../utils/constants.js";
 let createdUsers = null;
 let adminUser = null;
 
-const fakeUser = { name: "user1", email: "user1@mail.com", password: "password", isAdmin: false };
+const fakeUser = { name: "whwang", email: "user1@mail.com", password: "password", isAdmin: false };
 
 async function getUsers() {
   const res = await request(app).get("/api/users");
@@ -115,23 +115,40 @@ describe("users", () => {
       expect.assertions(2);
     });
 
-    describe("invalid user data", () => {
-      function invalidDataPost(user = fakeUser) {
+    describe("various user input cases", () => {
+      function userInputPost(user = fakeUser) {
         const { name, email, password } = user;
         return request(app).post(registerApi).send({ name, email, password });
       }
 
-      it.each([{ field: "name", value: "$%john" }])(
-        "returns 400 bad request when user $field is $value",
-        async ({ field, value }) => {
-          const res = await invalidDataPost({ ...fakeUser, [field]: value });
-          expect(res.statusCode).toBe(400);
-          expect(res.body.success).toBe(false);
-          // expect(res.body.errors[field]).toBeDefined();
-          // expect(res.body.errors[field]).toBe("Invalid name");
-          expect.assertions(2);
-        }
-      );
+      it.each([
+        {
+          field: "name",
+          value: "john doe",
+          status: "201",
+        },
+        {
+          field: "name",
+          value: "王小明",
+          status: "201",
+        },
+        { field: "name", value: "john-doe", status: "400" },
+        {
+          field: "name",
+          value: "johndoeingkjhhoogfffhkllhophgftyurdsrsedgjlpoiyxrdfgdtffgi",
+          status: "400",
+        },
+        { field: "email", value: "XXXXXXXXXXXXX", status: "400" },
+        { field: "email", value: "XXXXXXX@XXXXXX", status: "400" },
+        { field: "password", value: "okok88", status: "201" },
+        { field: "password", value: "okok8", status: "400" },
+        { field: "password", value: "okok-notok", status: "400" },
+      ])("returns $status when user $field is $value", async ({ field, value, status }) => {
+        const res = await userInputPost({ ...fakeUser, [field]: value });
+        expect(res.statusCode).toBe(+status);
+        expect(res.body.success).toBe(status === "201");
+        expect.assertions(2);
+      });
     });
 
     it("returns 409 conflict with existing user email", async () => {
