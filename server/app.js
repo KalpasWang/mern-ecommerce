@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { errorHandler } from "./middleware/errorHandler.js";
+import { errorHandler } from "./utils/errorHandler.js";
 import { productRoutes } from "./modules/product/product.route.js";
 import { userRoutes } from "./modules/user/user.controller.js";
 
