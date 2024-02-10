@@ -151,6 +151,13 @@ describe("users", () => {
       });
     });
 
+    it("returns 400 bad request with empty body", async () => {
+      const res = await request(app).post(registerApi).send({});
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect.assertions(2);
+    });
+
     it("returns 409 conflict with existing user email", async () => {
       await addNewUser();
       const res = await request(app)

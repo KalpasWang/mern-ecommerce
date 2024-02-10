@@ -1,5 +1,4 @@
 import { CustomError } from "./customError.js";
-import log from "./logger.js";
 
 export const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -32,6 +31,5 @@ export const errorHandler = (err, req, res, next) => {
   res.status(err.statusCode).json({
     success: false,
     message: err.message,
-    stack: err.stack,
   });
 };

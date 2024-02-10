@@ -10,10 +10,12 @@ const userSchema = Joi.object({
 });
 
 export const registerValidator = (req, res, next) => {
-  req.body.name = req.body.name.trim();
+  if (typeof req.body.name === "string" && req.body.name.length > 0) {
+    req.body.name = req.body.name.trim();
+  }
   const { error } = userSchema.validate(req.body);
   if (error) {
-    return res.status(400).send({ success: false, message: error.details.message });
+    return res.status(400).send({ success: false, message: error.details[0].message });
   }
   next();
 };
