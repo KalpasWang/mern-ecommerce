@@ -1,4 +1,6 @@
 import Joi from "joi";
+import jwt from "jsonwebtoken";
+import User from "./user.model.js";
 
 const userSchema = Joi.object({
   name: Joi.string()
@@ -18,4 +20,15 @@ export const registerValidator = (req, res, next) => {
     return res.status(400).send({ success: false, message: error.details[0].message });
   }
   next();
+};
+
+export const authProtector = async (req, res, next) => {
+  try {
+    let token = req.cookies.jwt;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.userId).select("-password");
+    next();
+  } catch (error) {
+    res.status(401).send({ success: false, message: "Not authorized, no valid token" });
+  }
 };

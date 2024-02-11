@@ -168,4 +168,24 @@ describe("users", () => {
       expect.assertions(2);
     });
   });
+
+  describe("GET /api/users/profile, get current login user profile", () => {
+    const profileApi = "/api/users/profile";
+
+    it("returns 200 ok and success true with valid credentials", async () => {
+      let user = createdUsers[0];
+      const token = user.generateToken();
+      const res = await request(app).get(profileApi).set("Cookie", `jwt=${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect.assertions(2);
+    });
+
+    it("returns 401 unauthorized with invalid credentials", async () => {
+      const res = await request(app).get(profileApi);
+      expect(res.statusCode).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect.assertions(2);
+    });
+  });
 });

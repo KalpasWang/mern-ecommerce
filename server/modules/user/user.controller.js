@@ -2,7 +2,7 @@ import express from "express";
 import User from "./user.model.js";
 import { CustomError } from "../../utils/customError.js";
 import { JWT_EXPIRES_IN_NUM } from "../../utils/constants.js";
-import { registerValidator } from "./user.validator.js";
+import { authProtector, registerValidator } from "./user.middleware.js";
 
 const router = express.Router();
 
@@ -85,6 +85,31 @@ router.post("/register", registerValidator, async (req, res, next) => {
       name: createdUser.name,
       email: createdUser.email,
       isAdmin: createdUser.isAdmin,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * get user profile
+ * @access private
+ * @route GET /api/users/profile
+ */
+router.get("/profile", authProtector, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+    res.json({
+      success: true,
+      profile: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
     });
   } catch (error) {
     next(error);
