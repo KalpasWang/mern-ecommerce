@@ -17,8 +17,6 @@ async function getUsers() {
 }
 
 async function addNewUser(user = { ...fakeUser }) {
-  const hash = await bcrypt.hash(user.password, SALT);
-  user.password = hash;
   return await User.create(user);
 }
 
@@ -149,6 +147,17 @@ describe("users", () => {
         expect(res.body.success).toBe(status === "201");
         expect.assertions(2);
       });
+    });
+
+    it("user password is hashed", async () => {
+      const res = await request(app)
+        .post(registerApi)
+        .send({ name: fakeUser.name, email: fakeUser.email, password: fakeUser.password });
+      const user = await User.findById(res.body.id);
+      const isMatch = await user.matchPassword(fakeUser.password);
+      expect(user.password).not.toBe(fakeUser.password);
+      expect(isMatch).toBe(true);
+      expect.assertions(2);
     });
 
     it("returns 400 bad request with empty body", async () => {

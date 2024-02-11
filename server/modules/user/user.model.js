@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { JWT_EXPIRES_IN } from "../../utils/constants.js";
+import { JWT_EXPIRES_IN, SALT } from "../../utils/constants.js";
 
 const userSchema = new Schema(
   {
@@ -41,14 +41,13 @@ userSchema.method("generateToken", function () {
 });
 
 // Encrypt password using bcrypt
-// userSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) {
-//     next();
-//   }
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
 
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = await bcrypt.hash(this.password, salt);
-// });
+  this.password = await bcrypt.hash(this.password, SALT);
+});
 
 const User = model("User", userSchema);
 

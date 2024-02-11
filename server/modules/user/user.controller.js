@@ -2,7 +2,7 @@ import express from "express";
 import User from "./user.model.js";
 import { CustomError } from "../../utils/customError.js";
 import { JWT_EXPIRES_IN_NUM } from "../../utils/constants.js";
-import { authProtector, registerValidator } from "./user.middleware.js";
+import { authProtector, authValidator, registerValidator } from "./user.middleware.js";
 
 const router = express.Router();
 
@@ -11,19 +11,19 @@ const router = express.Router();
  * @access public
  * @route POST /api/users/auth
  */
-router.post("/auth", async (req, res, next) => {
+router.post("/auth", authValidator, async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
+    const foundUser = await User.findOne({ email });
+    if (!foundUser) {
       throw new CustomError("Invalid email", 400);
     }
-    const isMatch = await user.matchPassword(password);
+    const isMatch = await foundUser.matchPassword(password);
     if (!isMatch) {
       throw new CustomError("Invalid password", 401);
     }
     // Set JWT as an HTTP-Only cookie
-    const token = await user.generateToken();
+    const token = await foundUser.generateToken();
     if (!token) {
       throw new CustomError("server Unable to generate token", 500);
     }
@@ -36,10 +36,10 @@ router.post("/auth", async (req, res, next) => {
     // send res
     res.json({
       success: true,
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
+      id: foundUser._id.toString(),
+      name: foundUser.name,
+      email: foundUser.email,
+      isAdmin: foundUser.isAdmin,
     });
   } catch (error) {
     next(error);
