@@ -1,8 +1,9 @@
 import express from "express";
+import bcrypt from "bcryptjs";
 import User from "./user.model.js";
-import { CustomError } from "../../utils/customError.js";
-import { JWT_EXPIRES_IN_NUM } from "../../utils/constants.js";
 import { authProtector, authValidator, registerValidator } from "./user.middleware.js";
+import { CustomError } from "../../utils/customError.js";
+import { JWT_EXPIRES_IN_NUM, SALT } from "../../utils/constants.js";
 
 const router = express.Router();
 
@@ -36,10 +37,12 @@ router.post("/auth", authValidator, async (req, res, next) => {
     // send res
     res.json({
       success: true,
-      id: foundUser._id.toString(),
-      name: foundUser.name,
-      email: foundUser.email,
-      isAdmin: foundUser.isAdmin,
+      user: {
+        id: foundUser._id.toString(),
+        name: foundUser.name,
+        email: foundUser.email,
+        isAdmin: foundUser.isAdmin,
+      },
     });
   } catch (error) {
     next(error);
@@ -75,16 +78,19 @@ router.post("/register", registerValidator, async (req, res, next) => {
     if (user) {
       throw new CustomError("user alredy exists", 409);
     }
-    const createdUser = await User.create({ name, email, password });
+    const hashedPassword = await bcrypt.hash(password, SALT);
+    const createdUser = await User.create({ name, email, password: hashedPassword });
     if (!createdUser) {
       throw new CustomError("server Unable to create user", 500);
     }
     res.status(201).json({
       success: true,
-      id: createdUser._id.toString(),
-      name: createdUser.name,
-      email: createdUser.email,
-      isAdmin: createdUser.isAdmin,
+      user: {
+        id: createdUser._id.toString(),
+        name: createdUser.name,
+        email: createdUser.email,
+        isAdmin: createdUser.isAdmin,
+      },
     });
   } catch (error) {
     next(error);

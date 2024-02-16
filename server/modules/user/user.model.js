@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { JWT_EXPIRES_IN, SALT } from "../../utils/constants.js";
+import { JWT_EXPIRES_IN } from "../../utils/constants.js";
 
 const userSchema = new Schema(
   {
@@ -38,15 +38,6 @@ userSchema.method("generateToken", function () {
   return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });
-});
-
-// Encrypt password using bcrypt
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-
-  this.password = await bcrypt.hash(this.password, SALT);
 });
 
 const User = model("User", userSchema);

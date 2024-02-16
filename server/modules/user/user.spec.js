@@ -1,15 +1,13 @@
 import { expect, describe, it } from "@jest/globals";
 import request from "supertest";
 import bcrypt from "bcryptjs";
-import app from "../../app.js";
 import User from "./user.model.js";
 import { userSamples } from "./user.sample.js";
+import app from "../../app.js";
 import { SALT } from "../../utils/constants.js";
 
 let createdUsers = null;
-let adminUser = null;
-
-const fakeUser = { name: "whwang", email: "user1@mail.com", password: "password", isAdmin: false };
+const fakeUser = { name: "whwang", email: "user1@mail.com", password: "password" };
 
 async function getUsers() {
   const res = await request(app).get("/api/users");
@@ -17,18 +15,21 @@ async function getUsers() {
 }
 
 async function addNewUser(user = { ...fakeUser }) {
+  user.password = bcrypt.hashSync(user.password, SALT);
   return await User.create(user);
 }
 
 beforeEach(async () => {
-  createdUsers = await User.insertMany(userSamples);
-  adminUser = createdUsers.find((user) => user.isAdmin);
+  const users = userSamples.map((user) => ({
+    ...user,
+    password: bcrypt.hashSync(user.password, SALT),
+  }));
+  createdUsers = await User.insertMany(users);
 });
 
 afterEach(async () => {
   await User.deleteMany();
   createdUsers = null;
-  adminUser = null;
 });
 
 describe("users", () => {
@@ -45,32 +46,33 @@ describe("users", () => {
     const authApi = "/api/users/auth";
 
     it("returns 200 ok and success true with valid credentials", async () => {
-      await addNewUser();
+      const user = userSamples[0];
       const res = await request(app)
         .post(authApi)
-        .send({ email: fakeUser.email, password: fakeUser.password });
+        .send({ email: user.email, password: user.password });
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect.assertions(2);
     });
 
     it("returns user id, name, email, isAdmin and cookie when login success", async () => {
-      const user = await addNewUser();
+      const user = createdUsers[0];
+      const input = userSamples[0];
       const res = await request(app)
         .post(authApi)
-        .send({ email: fakeUser.email, password: fakeUser.password });
-      expect(res.body.id).toBe(user._id.toString());
-      expect(res.body.name).toBe(user.name);
-      expect(res.body.email).toBe(user.email);
-      expect(res.body.isAdmin).toBe(user.isAdmin);
+        .send({ email: input.email, password: input.password });
+      expect(res.body.user.id).toBe(user._id.toString());
+      expect(res.body.user.name).toBe(user.name);
+      expect(res.body.user.email).toBe(user.email);
+      expect(res.body.user.isAdmin).toBe(user.isAdmin);
+      expect(res.body.user.password).toBeUndefined(); // password is not returned in response body
       expect(res.get("Set-Cookie")).toBeDefined();
       expect(res.get("Set-Cookie")[0]).toContain("jwt"); // cookie is set with jwt token
-      expect(res.body.password).toBeUndefined(); // password is not returned in response body
       expect.assertions(7);
     });
 
     it("returns 401 unauthorized with invalid credentials", async () => {
-      const user = await addNewUser();
+      const user = userSamples[0];
       const res = await request(app)
         .post("/api/users/auth")
         .send({ email: user.email, password: "XXXXXXXXXXXXX" });
@@ -80,10 +82,10 @@ describe("users", () => {
     });
 
     it("returns 400 bad request with invalid email", async () => {
-      await addNewUser();
+      const user = userSamples[0];
       const res = await request(app)
         .post("/api/users/auth")
-        .send({ email: "invalid@email.com", password: fakeUser.password });
+        .send({ email: "invalid@email.com", password: user.password });
       expect(res.statusCode).toBe(400);
       expect(res.body.success).toBe(false);
       expect.assertions(2);
@@ -111,6 +113,18 @@ describe("users", () => {
       expect(res.statusCode).toBe(201);
       expect(res.body.success).toBe(true);
       expect.assertions(2);
+    });
+
+    it("returns user id, name, email, isAdmin when register success", async () => {
+      const res = await request(app)
+        .post(registerApi)
+        .send({ name: fakeUser.name, email: fakeUser.email, password: fakeUser.password });
+      expect(res.body.user.id).toBeDefined();
+      expect(res.body.user.name).toBe(fakeUser.name);
+      expect(res.body.user.email).toBe(fakeUser.email);
+      expect(res.body.user.isAdmin).toBe(fakeUser.isAdmin || false);
+      expect(res.body.user.password).toBeUndefined(); // password is not returned in response body
+      expect.assertions(5);
     });
 
     describe("various user input cases", () => {
@@ -153,7 +167,7 @@ describe("users", () => {
       const res = await request(app)
         .post(registerApi)
         .send({ name: fakeUser.name, email: fakeUser.email, password: fakeUser.password });
-      const user = await User.findById(res.body.id);
+      const user = await User.findById(res.body.user.id);
       const isMatch = await user.matchPassword(fakeUser.password);
       expect(user.password).not.toBe(fakeUser.password);
       expect(isMatch).toBe(true);
