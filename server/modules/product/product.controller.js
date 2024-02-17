@@ -1,13 +1,16 @@
+import express from "express";
+import { isValidObjectId } from "mongoose";
 import Product from "./product.model.js";
 import { CustomError } from "../../utils/customError.js";
-import { isValidObjectId } from "mongoose";
+
+const router = express.Router();
 
 /**
- * @access Public
+ * Fetch all products
+ * @access public
  * @route GET /api/products
- * @description Fetch all products
  */
-export async function getAllProducts(req, res, next) {
+router.get("/", async (req, res, next) => {
   try {
     const products = await Product.find().select("-reviews");
     res.status(200).json({
@@ -17,14 +20,14 @@ export async function getAllProducts(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
 /**
- * @access Public
+ * Fetch single product by id
+ * @access public
  * @route GET /api/products/:id
- * @description Fetch single product by id
  */
-export async function getProductById(req, res, next) {
+router.get("/:id", async (req, res, next) => {
   try {
     if (!isValidObjectId(req.params.id)) {
       throw new CustomError(`product not found with invalid product Id`, 404);
@@ -41,4 +44,6 @@ export async function getProductById(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
+
+export { router as productRoutes };

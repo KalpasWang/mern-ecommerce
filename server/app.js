@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import { errorHandler } from "./utils/errorHandler.js";
-import { productRoutes } from "./modules/product/product.route.js";
+import { productRoutes } from "./modules/product/product.controller.js";
 import { userRoutes } from "./modules/user/user.controller.js";
 
 // load env
