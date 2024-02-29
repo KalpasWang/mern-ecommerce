@@ -51,13 +51,25 @@ describe("products", () => {
       expect.hasAssertions();
     });
 
-    it("returns products without reviews", async () => {
+    it("returns products with their info. But without description, reviews, numReviews, countInStock, modifiedBy", async () => {
       const res = await getProducts();
       res.body.products.forEach((product, i) => {
-        expect(product.name).toBe(productSamples[i].name);
+        expect(typeof product.name).toBe("string");
+        expect(typeof product.image).toBe("string");
+        expect(typeof product.brand).toBe("string");
+        expect(typeof product.category).toBe("string");
+        expect(typeof product.soldAmount).toBe("number");
+        expect(typeof product.rating).toBe("number");
+        expect(typeof product.price).toBe("number");
+        expect(typeof product.createdAt).toBe("string");
+        expect(typeof product.updatedAt).toBe("string");
+        expect(product.description).toBeUndefined();
         expect(product.reviews).toBeUndefined();
+        expect(product.numReviews).toBeUndefined();
+        expect(product.countInStock).toBeUndefined();
+        expect(product.modifiedBy).toBeUndefined();
       });
-      expect.assertions(productSamples.length * 2);
+      expect.assertions(createdProducts.length * 14);
     });
   });
 
@@ -78,9 +90,22 @@ describe("products", () => {
 
     it("returns product details with reviews", async () => {
       const res = await getProductById(createdProducts[0]._id);
-      expect(res.body.product.name).toBe(createdProducts[0].name);
-      expect(Array.isArray(res.body.product.reviews)).toBe(true);
-      expect.assertions(2);
+      const product = res.body.product;
+      expect(typeof product.name).toBe("string");
+      expect(typeof product.image).toBe("string");
+      expect(typeof product.brand).toBe("string");
+      expect(typeof product.category).toBe("string");
+      expect(typeof product.description).toBe("string");
+      expect(typeof product.soldAmount).toBe("number");
+      expect(typeof product.rating).toBe("number");
+      expect(typeof product.numReviews).toBe("number");
+      expect(typeof product.price).toBe("number");
+      expect(typeof product.countInStock).toBe("number");
+      expect(typeof product.modifiedBy).toBe("string");
+      expect(typeof product.createdAt).toBe("string");
+      expect(typeof product.updatedAt).toBe("string");
+      expect(Array.isArray(product.reviews)).toBe(true);
+      expect.assertions(14);
     });
   });
 

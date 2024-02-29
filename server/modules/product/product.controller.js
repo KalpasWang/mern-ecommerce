@@ -12,7 +12,9 @@ const router = express.Router();
  */
 router.get("/", async (req, res, next) => {
   try {
-    const products = await Product.find().select("-reviews");
+    const products = await Product.find().select(
+      "-description -reviews -numReviews -countInStock -modifiedBy"
+    );
     res.status(200).json({
       success: true,
       products,
